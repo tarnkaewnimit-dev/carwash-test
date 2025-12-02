@@ -34,7 +34,7 @@ def create_qr(data: PaymentRequest):
 
    # ดึง QR code URL ที่ถูกต้อง
     qr_url = (
-        charge.source.scannable_code.image.download_uri
+        charge.source.scannable_code.image.uri
         if charge.source and charge.source.scannable_code
         else None
     )
@@ -80,4 +80,5 @@ def check(order_id: str):
     """
     status = payment_status.get(order_id, {"paid": False})
     return status
+
 
