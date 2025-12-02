@@ -32,14 +32,24 @@ def create_qr(data: PaymentRequest):
         }
     )
 
-    # เก็บสถานะรอชำระ
+   # ดึง QR code URL ที่ถูกต้อง
+    qr_url = (
+        charge.source.scannable_code.image.download_uri
+        if charge.source and charge.source.scannable_code
+        else None
+    )
+
+    if not qr_url:
+        raise Exception("ERROR: No QR Code returned from Omise")
+
+    # เก็บสถานะ
     payment_status[data.order_id] = {
         "paid": False,
         "charge_id": charge.id
     }
 
     return {
-        "qr_image": charge.source.scannable_code.image.download_uri,
+        "qr_image": qr_url,
         "charge_id": charge.id,
         "order_id": data.order_id
     }
@@ -70,3 +80,4 @@ def check(order_id: str):
     """
     status = payment_status.get(order_id, {"paid": False})
     return status
+
